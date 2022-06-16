@@ -91,6 +91,9 @@ void tombolHandler() {
     }
     else if (flag_btn == "TBL_MODE_ROBOT" &&  (counter_modeRobotBtn == 2 || counter_modeRobotBtn == 3 || counter_modeRobotBtn == 4)  ) {
       flag_btn = "TBL_LIST_MOTOR";
+      if (counter_modeRobotBtn == 1) {
+        MODE_ROBOT_NOW = ROBOT_STOP;
+      }
       if (counter_modeRobotBtn == 2) {
         MODE_ROBOT_NOW = DEBUG_ROBOT_RPM;
       }

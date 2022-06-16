@@ -1,14 +1,10 @@
 void control_motor() {
-
-
-
-
-
+  settingDirection();
   if (MODE_ROBOT_NOW == DEBUG_ROS_PWM) {  // Mode Setting/Debug Robot Melalui ROS MASTER
     if (enablePID == 1) {
       enablePID = 0; // Disable PID Flag
       motor1_PID.reset();
-      motor1_PID.reset();
+      motor2_PID.reset();
     }
     // Motor 1
     if (debug_Arah_Motor[0] == 0) { // Direction = 0 --> Mati
@@ -101,13 +97,13 @@ void control_motor() {
       ledcWrite(motor1.pwm_ch2, 0);
     }
     if (debug_Arah_Motor[0] == 1) {
-      ledcWrite(motor1.pwm_ch1, settingPWM[0]);
+      ledcWrite(motor1.pwm_ch1, abs(settingPWM[0]));
       ledcWrite(motor1.pwm_ch2, 0);
     }
 
     else if (debug_Arah_Motor[0] == 2) {
       ledcWrite(motor1.pwm_ch1, 0);
-      ledcWrite(motor1.pwm_ch2, settingPWM[0]);
+      ledcWrite(motor1.pwm_ch2, abs(settingPWM[0]));
     }
 
     // Motor 2
@@ -117,13 +113,14 @@ void control_motor() {
     }
 
     else if (debug_Arah_Motor[1] == 1) {
-      ledcWrite(motor2.pwm_ch1, settingPWM[1]);
+
+      ledcWrite(motor2.pwm_ch1, abs(settingPWM[1]));
       ledcWrite(motor2.pwm_ch2, 0);
     }
 
     else if (debug_Arah_Motor[1] == 2) {
       ledcWrite(motor2.pwm_ch1, 0);
-      ledcWrite(motor2.pwm_ch2, settingPWM[1]);
+      ledcWrite(motor2.pwm_ch2, abs(settingPWM[1]));
     }
 
     //    delay(10);
@@ -149,7 +146,6 @@ void control_motor() {
 
       // Motor 1
       if (debug_Arah_Motor[0] == 0) {
-
         ledcWrite(motor1.pwm_ch1, 0);
         ledcWrite(motor1.pwm_ch2, 0);
       }
@@ -183,51 +179,57 @@ void control_motor() {
 
 
   }
+  if (MODE_ROBOT_NOW == ROBOT_STOP) {
+    ledcWrite(motor1.pwm_ch1, 0);
+    ledcWrite(motor1.pwm_ch2, 0);
+  }
+
 }
 
 void settingDirection() {
-  // Seting Direction PWM
-  if (settingPWM[0] == 0) {
-    debug_Arah_Motor[0] = 0;
-  }
-  else if (settingPWM[0] < 0) {
-    debug_Arah_Motor[0] = 1;
-  }
-  else if (settingPWM[0] > 0) {
-    debug_Arah_Motor[0] = 2;
+  if (MODE_ROBOT_NOW == DEBUG_ROBOT_PWM) {
+    // Seting Direction PWM
+    if (settingPWM[0] == 0) {
+      debug_Arah_Motor[0] = 0;
+    }
+    else if (settingPWM[0] < 0) {
+      debug_Arah_Motor[0] = 1;
+    }
+    else if (settingPWM[0] > 0) {
+      debug_Arah_Motor[0] = 2;
+    }
+
+    if (settingPWM[1] == 0) {
+      debug_Arah_Motor[1] = 0;
+    }
+    else if (settingPWM[1] < 0) {
+      debug_Arah_Motor[1] = 1;
+    }
+    else if (settingPWM[1] > 0) {
+      debug_Arah_Motor[1] = 2;
+    }
   }
 
-  if (settingPWM[1] == 0) {
-    debug_Arah_Motor[1] = 0;
-  }
-  else if (settingPWM[1] < 0) {
-    debug_Arah_Motor[1] = 1;
-  }
-  else if (settingPWM[0] > 0) {
-    debug_Arah_Motor[1] = 2;
-  }
+  if (MODE_ROBOT_NOW == DEBUG_ROBOT_RPM) {
+    // Seting Direction RPM
+    if (settingRPM[0] == 0) {
+      debug_Arah_Motor[0] = 0;
+    }
+    else if (settingRPM[0] < 0) {
+      debug_Arah_Motor[0] = 1;
+    }
+    else if (settingRPM[0] > 0) {
+      debug_Arah_Motor[0] = 2;
+    }
 
-  // Seting Direction RPM
-  if (settingRPM[0] == 0) {
-    debug_Arah_Motor[0] = 0;
+    if (settingRPM[1] == 0) {
+      debug_Arah_Motor[1] = 0;
+    }
+    else if (settingRPM[1] < 0) {
+      debug_Arah_Motor[1] = 1;
+    }
+    else if (settingRPM[1] > 0) {
+      debug_Arah_Motor[1] = 2;
+    }
   }
-  else if (settingRPM[0] < 0) {
-    debug_Arah_Motor[0] = 1;
-  }
-  else if (settingRPM[0] > 0) {
-    debug_Arah_Motor[0] = 2;
-  }
-
-  if (settingRPM[1] == 0) {
-    debug_Arah_Motor[1] = 0;
-  }
-  else if (settingRPM[1] < 0) {
-    debug_Arah_Motor[1] = 1;
-  }
-  else if (settingRPM[0] > 0) {
-    debug_Arah_Motor[1] = 2;
-  }
-
-
-
 }

@@ -5,8 +5,9 @@ void configMotor() {
 
   // TIMER BACA ENCODER
   //
-  //  TimerPID1.attachInterruptInterval(50 * 1000, TIMER_PID_M1);
-  //  TimerPID2.attachInterruptInterval(50 * 1000, TIMER_PID_M2);
+  TimerPID1.attachInterruptInterval(50 * 1000, TIMER_PID_M1);
+  TimerPID2.attachInterruptInterval(50 * 1000, TIMER_PID_M2);
+  
   ITimer1.attachInterruptInterval(100 * 1000, TimerHandler1);
   ITimer2.attachInterruptInterval(100 * 1000, TimerHandler2);
 
@@ -44,7 +45,7 @@ void configMotor() {
   // --- MOTOR 4 PID
   motor2_PID.mulai();
   motor2_PID.setSetPoints(80);
-  motor2_PID.setSampling(100,100);
+  motor2_PID.setSampling(100, 100);
   motor2_PID.setKonstanta(1, 0, 0);
 
   // --- MOTOR 4 PWM
