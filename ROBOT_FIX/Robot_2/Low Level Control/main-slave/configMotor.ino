@@ -25,7 +25,7 @@ void configMotor() {
   // --- MOTOR PID
   motor1_PID.mulai();
   motor1_PID.setSetPoints(80);
-  motor1_PID.setSampling(0.10, 0.1);
+  motor1_PID.setSampling(100, 100);
   motor1_PID.setKonstanta(1, 0, 0);
 
   // --- MOTOR 1 PWM
@@ -44,7 +44,7 @@ void configMotor() {
   // --- MOTOR 4 PID
   motor2_PID.mulai();
   motor2_PID.setSetPoints(80);
-  motor2_PID.setSampling(0.1, 0.1);
+  motor2_PID.setSampling(100,100);
   motor2_PID.setKonstanta(1, 0, 0);
 
   // --- MOTOR 4 PWM

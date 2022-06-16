@@ -1,24 +1,5 @@
 void control_motor() {
-  // Seting Direction
-  if (settingPWM[0] < 0) {
-    debug_Arah_Motor[0] = 1;
-  }
-  else if (settingPWM[0] > 0) {
-    debug_Arah_Motor[0] = 2;
-  }
-  else if (settingPWM[0] == 0) {
-    debug_Arah_Motor[0] = 0;
-  }
 
-  if (settingPWM[1] < 0) {
-    debug_Arah_Motor[1] = 1;
-  }
-  else if (settingPWM[0] > 0) {
-    debug_Arah_Motor[1] = 2;
-  }
-  else if (settingPWM[1] == 0) {
-    debug_Arah_Motor[1] = 0;
-  }
 
 
 
@@ -70,7 +51,7 @@ void control_motor() {
     }
 
     motor1_PID.setSetPoints(debug_RPM_Motor[0]);
-    motor2_PID.setSetPoints(debug_RPM_Motor[0]);
+    motor2_PID.setSetPoints(debug_RPM_Motor[1]);
 
     if (enablePID == 1) {
 
@@ -90,7 +71,6 @@ void control_motor() {
       }
 
       // Motor 2
-
       if (debug_Arah_Motor[1] == 0) {
         ledcWrite(motor2.pwm_ch1, 0);
         ledcWrite(motor2.pwm_ch2, 0);
@@ -109,13 +89,17 @@ void control_motor() {
     }
   }
   if (MODE_ROBOT_NOW == DEBUG_ROBOT_PWM) {
- 
+
     if (enablePID == 1) {
       enablePID = 0; // Disable PID Flag
       motor1_PID.reset();
       motor2_PID.reset();
     }
     // Motor 1
+    if (debug_Arah_Motor[0] == 0) {
+      ledcWrite(motor1.pwm_ch1, 0);
+      ledcWrite(motor1.pwm_ch2, 0);
+    }
     if (debug_Arah_Motor[0] == 1) {
       ledcWrite(motor1.pwm_ch1, settingPWM[0]);
       ledcWrite(motor1.pwm_ch2, 0);
@@ -151,4 +135,99 @@ void control_motor() {
     //    sendSize = keMaster.txObj(buf, sendSize);
     //    keMaster.sendData(sendSize);
   }
+  if (MODE_ROBOT_NOW == DEBUG_ROBOT_RPM) {
+    if (enablePID == 0) {
+      enablePID = 1;
+      motor1_PID.mulai();
+      motor2_PID.mulai(); //
+    }
+    Serial.println("oe");
+    motor1_PID.setSetPoints(500);
+    motor2_PID.setSetPoints(500);
+
+    if (enablePID == 1) {
+
+      // Motor 1
+      if (debug_Arah_Motor[0] == 0) {
+
+        ledcWrite(motor1.pwm_ch1, 0);
+        ledcWrite(motor1.pwm_ch2, 0);
+      }
+      if (debug_Arah_Motor[0] == 1) {
+        ledcWrite(motor1.pwm_ch1, abs(pwmOut1));
+        ledcWrite(motor1.pwm_ch2, 0);
+      }
+      if (debug_Arah_Motor[0] == 2) {
+        ledcWrite(motor1.pwm_ch1, 0);
+        ledcWrite(motor1.pwm_ch2, abs(pwmOut1));
+      }
+
+      // Motor 2
+
+      if (debug_Arah_Motor[1] == 0) {
+        ledcWrite(motor2.pwm_ch1, 0);
+        ledcWrite(motor2.pwm_ch2, 0);
+      }
+      if (debug_Arah_Motor[1] == 1) {
+        ledcWrite(motor2.pwm_ch1, abs(pwmOut2));
+        ledcWrite(motor2.pwm_ch2, 0);
+      }
+      if (debug_Arah_Motor[1] == 2) {
+        ledcWrite(motor2.pwm_ch1, 0);
+        ledcWrite(motor2.pwm_ch2, abs(pwmOut2));
+      }
+
+      //      debug_PWM_Motor[0] = abs(pwmOut1);
+      //      debug_PWM_Motor[1] = abs(pwmOut2);
+    }
+
+
+  }
+}
+
+void settingDirection() {
+  // Seting Direction PWM
+  if (settingPWM[0] == 0) {
+    debug_Arah_Motor[0] = 0;
+  }
+  else if (settingPWM[0] < 0) {
+    debug_Arah_Motor[0] = 1;
+  }
+  else if (settingPWM[0] > 0) {
+    debug_Arah_Motor[0] = 2;
+  }
+
+  if (settingPWM[1] == 0) {
+    debug_Arah_Motor[1] = 0;
+  }
+  else if (settingPWM[1] < 0) {
+    debug_Arah_Motor[1] = 1;
+  }
+  else if (settingPWM[0] > 0) {
+    debug_Arah_Motor[1] = 2;
+  }
+
+  // Seting Direction RPM
+  if (settingRPM[0] == 0) {
+    debug_Arah_Motor[0] = 0;
+  }
+  else if (settingRPM[0] < 0) {
+    debug_Arah_Motor[0] = 1;
+  }
+  else if (settingRPM[0] > 0) {
+    debug_Arah_Motor[0] = 2;
+  }
+
+  if (settingRPM[1] == 0) {
+    debug_Arah_Motor[1] = 0;
+  }
+  else if (settingRPM[1] < 0) {
+    debug_Arah_Motor[1] = 1;
+  }
+  else if (settingRPM[0] > 0) {
+    debug_Arah_Motor[1] = 2;
+  }
+
+
+
 }
