@@ -37,7 +37,7 @@ class PID_Kontrol {
     
   
   public:
-    PID_Kontrol(double _Kp, double _Kd, double Ki,double _SetPoints, int _InMin , int _InMax, int _OutMin, int _OutMax);
+    PID_Kontrol(double _Kp, double _Ki, double _Kd,double _SetPoints, int _InMin , int _InMax, int _OutMin, int _OutMax);
     void mulai();
     void setRange(int _InMin , int _InMax, int _OutMin, int _OutMax);
     void setKonstanta(double _Kp, double _Kd, double Ki);

@@ -35,17 +35,25 @@ void interfaceMain() {
   }
   else if (flag_btn == "TBL_INFO_MOTOR") {
     if (timerNgeprint2.fire()) {
+      char layar1[17];
+      char layar2[17];
+      sprintf(layar1, "M1: %03d M3: %03d", rpm1, rpm3);
+      sprintf(layar2, "M2: %03d M4: %03d", rpm2, rpm4);
       lcd.setCursor(0, 0);
-      lcd.print("M1:" + String(rpm1) + " M3:" + String(debug_RPM_Motor[3]) );
+      lcd.print(layar1);
       lcd.setCursor(0, 1);
-      lcd.print("M2:" + String(rpm2) + " M4:" + String(debug_RPM_Motor[4]) );
+      lcd.print(layar2);
+      
+      memset(layar1, 0, 17);
+      memset(layar2, 0, 17);
+
     }
 
   }
 
   else if (flag_btn == "TBL_MODE_ROBOT" ) {
     lcd.setCursor(0, 0);
-    lcd.print(TampilanAtas[0] + String(counter_mainBtn) + String(counter_modeRobotBtn));
+    lcd.print(TampilanAtas[0]);
     lcd.setCursor(0, 1);
     lcd.print(TampilanBawahModeRobot[counter_modeRobotBtn]);
   }

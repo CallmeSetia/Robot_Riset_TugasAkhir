@@ -4,7 +4,7 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #include "SerialTransfer.h"
-
+#include <ArduinoJson.h>
 #include <ESP32Encoder.h>
 #include "ESP32TimerInterrupt.h"
 
@@ -30,16 +30,22 @@ ESP32Timer TimerPID2(3);
 ESP32Encoder encoder1;
 ESP32Encoder encoder2;
 
+// Dari Master
+volatile int rpm3, rpm4;
+
 //Motor 1
 volatile int lastCount1 = 0;
 volatile int deltaCount1 = 0;
 volatile int rpm1 = 0;
+volatile int pwm1 = 0;
+
 volatile int encCnt1;
 
 //Motor 2
 volatile int lastCount2 = 0;
 volatile int deltaCount2 = 0;
 volatile int rpm2 = 0;
+volatile int pwm2 = 0;
 volatile int encCnt2;
 
 // Setting PWM properties
@@ -61,8 +67,8 @@ int arahPutarMotor2;
 // MODE ROBOT
 #define DEBUG_ROS_PWM "debug_ros_pwm"
 #define DEBUG_ROS_RPM "debug_ros_rpm"
-#define DEBUG_ROBOT_PWM "debug_robot_pwm"
-#define DEBUG_ROBOT_RPM "debug_robot_rpm"
+#define DEBUG_ROBOT_PWM "debug_pwm"
+#define DEBUG_ROBOT_RPM "debug_rpm"
 #define ROBOT_RUN "robot_run"
 #define ROBOT_STOP "robot_stop"
 
@@ -78,14 +84,14 @@ float debug_RPM_Motor[4] = {0, 0, 0, 0};
 
 // TIMER PID KALKULASI
 void IRAM_ATTR TIMER_PID_M1(void) {
-  pwmOut1 =  motor1_PID.kalkulasi(abs(rpm1));
-  if (pwmOut1 < 0) pwmOut1 = 0;
-  if (pwmOut1 > 1023) pwmOut1 = 1023;
+  pwmOut1 =  motor1_PID.kalkulasi(rpm1);
+  //  if (pwmOut1 < 0) pwmOut1 = 0;
+  //  if (pwmOut1 > 1023) pwmOut1 = 1023;
 }
 void IRAM_ATTR TIMER_PID_M2(void) {
-  pwmOut2 =  motor2_PID.kalkulasi(abs(rpm2));
-  if (pwmOut2 < 0) pwmOut2 = 0;
-  if (pwmOut2 > 1023) pwmOut2 = 1023;
+  pwmOut2 =  motor2_PID.kalkulasi(rpm2);
+  //  if (pwmOut2 < 0) pwmOut2 = 0;
+  //  if (pwmOut2 > 1023) pwmOut2 = 1023;
 }
 
 //
@@ -135,10 +141,10 @@ float settingPWM_INPUT[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 
 
 float settingPID[][10] = {
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M1
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M2
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M3
-  {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M4
+  {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // settingPID KP KI KD Ts Ti Td M1
+  {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M2
+  {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M3
+  {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M4
 };
 
 float settingPID_INPUT[][10] = {
@@ -147,6 +153,7 @@ float settingPID_INPUT[][10] = {
   {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M3
   {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, // KP KI KD Ts Ti Td M4
 };
+
 
 void setup() {
   lcdInit();
@@ -159,7 +166,8 @@ void setup() {
   pinMode(TombolMenu[3], INPUT_PULLUP);
 
   Serial.begin(9600);
-  Serial2.begin(57600);
+
+  Serial2.begin(115200);
 
   keMasterConfig();
   configMotor();
@@ -180,10 +188,14 @@ void loop() {
   // INTERFACE DISPLAY / OUT
   interfaceMain();
   control_motor();
-  //  kirimFeedbackRPMMotor();
+
+  //  ledcWrite(motor1.pwm_ch1, 1000);
+  //  ledcWrite(motor1.pwm_ch2, 0);
+  kirimInformasiKeMaster();
   //
   if (timerNgeprint1.fire() ) {
     Serial.println(MODE_ROBOT_NOW);
+
     //
     //    // PID
     //    for (int i = 0; i < 1; i++) {
@@ -208,6 +220,4 @@ void loop() {
     //    }
     //
   }
-
-
 }

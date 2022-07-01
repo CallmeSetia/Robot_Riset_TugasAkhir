@@ -1,6 +1,6 @@
 #include "PID_Kontrol.h"
 #include <Arduino.h>
-PID_Kontrol::PID_Kontrol(double _Kp, double _Kd, double _Ki, double _SetPoints, int _InMin , int _InMax, int _OutMin, int _OutMax) {
+PID_Kontrol::PID_Kontrol(double _Kp, double _Ki, double _Kd, double _SetPoints, int _InMin , int _InMax, int _OutMin, int _OutMax) {
 
   this->Kp = _Kp;
   this->Kd = _Kd;
@@ -43,7 +43,7 @@ void PID_Kontrol::setRange(int _InMin , int _InMax, int _OutMin, int _OutMax) {
   this->OutRangeMax = _OutMax;
 }
 void PID_Kontrol::setSetPoints(double _Sp) {
-  this->Sp = _Sp;
+  this->Sp = _Sp * 2.5;
 }
 void PID_Kontrol::setKonstanta(double _Kp, double _Kd, double _Ki) {
   this->Kp = _Kp;

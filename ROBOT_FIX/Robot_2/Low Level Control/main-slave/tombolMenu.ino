@@ -86,6 +86,10 @@ void tombolHandler() {
     else if (flag_btn == "TBL_MAIN" && counter_mainBtn == 1) {
       flag_btn = "TBL_INFO_MOTOR";
     }
+
+    else if (flag_btn == "TBL_MODE_ROBOT" && counter_modeRobotBtn == 1) {
+      MODE_ROBOT_NOW = ROBOT_STOP;
+    }
     else if ( flag_btn == "TBL_INFO_MOTOR") {
       flag_btn = "TBL_MAIN";
     }
@@ -96,9 +100,11 @@ void tombolHandler() {
       }
       if (counter_modeRobotBtn == 2) {
         MODE_ROBOT_NOW = DEBUG_ROBOT_RPM;
+        Serial.println("oe rpm");
       }
       if (counter_modeRobotBtn == 4) {
         MODE_ROBOT_NOW = DEBUG_ROBOT_PWM;
+         Serial.println("oe pwm");
       }
     }
     else if (flag_btn == "TBL_LIST_MOTOR" && counter_modeRobotBtn == 2 && (counter_listMotor == 0 || counter_listMotor == 1 || counter_listMotor == 2 || counter_listMotor == 3)  ) {
@@ -179,7 +185,7 @@ void tombolHandler() {
       lcd.print("SAVING PARAMETER");
       delay(100); lcd.clear();
 
-      settingPID[counter_listMotor][counter_tuningPID ] =  settingPID_INPUT[counter_listMotor][counter_tuningPID ];
+      settingPID[counter_listMotor][counter_tuningPID ] =  settingPID_INPUT[counter_listMotor][counter_tuningPID];
     }
   }
 }

@@ -5,8 +5,8 @@ void configMotor() {
 
   // TIMER BACA ENCODER
   //
-  TimerPID1.attachInterruptInterval(50 * 1000, TIMER_PID_M1);
-  TimerPID2.attachInterruptInterval(50 * 1000, TIMER_PID_M2);
+  TimerPID1.attachInterruptInterval(100 * 1000, TIMER_PID_M1);
+  TimerPID2.attachInterruptInterval(100 * 1000, TIMER_PID_M2);
   
   ITimer1.attachInterruptInterval(100 * 1000, TimerHandler1);
   ITimer2.attachInterruptInterval(100 * 1000, TimerHandler2);
@@ -15,8 +15,8 @@ void configMotor() {
 
   msTimer.begin(5000);
   timerNgeprint1.begin(5000);
-  timerNgeprint2.begin(200);
-  timerNgeprint3.begin(1000);
+  timerNgeprint2.begin(1000);
+  timerNgeprint3.begin(100);
   timerNgeprint4.begin(1000);
   // ---- MOTOR 1
   motor1.pin(32, 33);
@@ -25,9 +25,6 @@ void configMotor() {
 
   // --- MOTOR PID
   motor1_PID.mulai();
-  motor1_PID.setSetPoints(80);
-  motor1_PID.setSampling(100, 100);
-  motor1_PID.setKonstanta(1, 0, 0);
 
   // --- MOTOR 1 PWM
   ledcSetup(motor1.pwm_ch1, freq, resolution);
@@ -42,12 +39,9 @@ void configMotor() {
   motor2.enc(35, 34);
   motor2.pwm_ch(2, 3);
 
-  // --- MOTOR 4 PID
+  // --- MOTOR 2 PID
   motor2_PID.mulai();
-  motor2_PID.setSetPoints(80);
-  motor2_PID.setSampling(100, 100);
-  motor2_PID.setKonstanta(1, 0, 0);
-
+  
   // --- MOTOR 4 PWM
   ledcSetup(motor2.pwm_ch1, freq, resolution);
   ledcSetup(motor2.pwm_ch2, freq, resolution);
