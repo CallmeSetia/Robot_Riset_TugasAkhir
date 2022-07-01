@@ -16,3 +16,12 @@ String parseString(String data, char separator[], int index)
 
   return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
+
+
+int getModeRobot() {
+
+  if ( MODE_ROBOT_NOW == ROBOT_RUN) return 1;
+  if ( MODE_ROBOT_NOW == ROBOT_STOP) return 2;
+  if ( MODE_ROBOT_NOW == DEBUG_ROBOT_RPM) return 3;
+  if ( MODE_ROBOT_NOW == DEBUG_ROBOT_PWM) return 4;
+}
