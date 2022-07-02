@@ -113,7 +113,7 @@ void setup() {
 
   // clear the encoder's raw count and set the tracked count to zero
   //encoder2.clearCount();
-  Serial.println("Encoder Start = " + String((int32_t)encoder.getCount()));
+  // Serial.println("Encoder Start = " + String((int32_t)encoder.getCount()));
   // set the lastToggle
   encoder2lastToggled = millis();
 }
