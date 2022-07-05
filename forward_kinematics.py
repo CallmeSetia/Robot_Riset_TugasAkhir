@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rospy
 from nav_msgs.msg import Odometry
@@ -23,13 +23,13 @@ class Server:
 		# robot's specification
 		self.alp = [np.radians(45.), np.radians(135.), np.radians(-135.), np.radians(-45.)]
 		self.gamma = [np.radians(-45.), np.radians(45.), np.radians(135.), np.radians(-135.)]
-		self.l = [0.125, 0.125, 0.125, 0.125]	#jarak titik tengah robot ke titik tengah roda, satuan dalam meter
+		self.l = [0.1305, 0.1305, 0.1305, 0.1305]	#jarak titik tengah robot ke titik tengah roda, satuan dalam meter
 		self.r = 0.03		#jari - jari roda, satuan dalam meter
 		# kinematics variables
 		self.w = np.matrix([[0., 0., 0., 0.]]).transpose()
 		self.pose = np.matrix([[0., 0., 0.]]).transpose()
 		self.pose_dot = np.matrix([[0., 0., 0.]]).transpose()
-		self.scale = [0.00025, 0.00025, 57.5] # offset sensor [x, y, roll]
+		self.scale = [0.0000135, 0.00001415, 1.] # offset sensor [x, y, roll]
 		self.velocity_scale = [1., 1., 1.] # offset kecepatan sensor [xdot, ydot, rolldot]
 		self.current_time = rospy.Time.now()
 		self.Jr = self.get_jacobianR() # menghitung nilai jacobian dari spesifikasi robot
@@ -61,8 +61,7 @@ class Server:
 	def imu_callback(self, dat): # subscribe imu sensor euler data
 		self.imu_data = dat # mengambil data imu dari ROS
 		#mengkonversi data quaternion ke data euler
-		#orientation_list = [dat.orientation.x, dat.orientation.y, dat.orientation.z, dat.orientation.w]
-		orientation_list = [dat.x, dat.y, dat.z, dat.w]
+		orientation_list = [dat.orientation.x, dat.orientation.y, dat.orientation.z, dat.orientation.w]
 		(roll, pitch, yaw) = tf.transformations.euler_from_quaternion (orientation_list)
 		
 		# menghitung kecepatan perubahan arah orientasi
@@ -84,16 +83,13 @@ class Server:
 		self.last_data[0] = roll
 		#print np.degrees(self.orientation[0]), np.degrees(self.imu_ref), np.degrees(self.final_orientation)
 	
-	def rpm_callback(self, data):
-		rpm = data.rpm
-
-		self.w[0,0] = rpm[0].x # roda kanan depan
-		self.w[1,0] = rpm[0].y # roda kiri depan
-		self.w[2,0] = rpm[0].z # roda kiri belakang
-		self.w[3,0] = rpm[0].w # roda kanan belakang
+	def rpm_callback(self, dat):
+		self.w[0,0] = dat.rpm[0].x # roda kanan depan
+		self.w[1,0] = dat.rpm[0].y # roda kiri depan
+		self.w[2,0] = dat.rpm[0].z # roda kiri belakang
+		self.w[3,0] = dat.rpm[0].w # roda kanan belakang
 		self.compute_odometry()
-		
-		
+	
 	def compute_odometry(self):
 		#time stamped
 		self.current_time = rospy.Time.now()		
@@ -101,7 +97,7 @@ class Server:
 		J = self.get_jacobianW(self.pose[2,0], self.Jr) # menghitung nilai invers jacobian robot terhadap lapangan
 		Ji = np.linalg.pinv(J) # merubah invers jacobian menjadi jacobian untuk fw kinematik
 		pose_dot = Ji * self.w	# menghitung kecepatan perpindahan posisi (forward kinematik)
-		
+
 		#penskalaan hasil real time	sensor		
 		pose_dot[0,0] = pose_dot[0,0] * self.scale[0]
 		pose_dot[1,0] = pose_dot[1,0] * self.scale[1]
@@ -111,7 +107,7 @@ class Server:
 		self.pose[0,0] = self.pose[0,0] + pose_dot[0,0] * self.dt#
 		self.pose[1,0] = self.pose[1,0] + pose_dot[1,0] * self.dt#
 		#self.pose[2,0] = self.pose[2,0] + pose_dot[2,0] * self.dt#
-		self.pose[2,0] = self.final_orientation * self.scale[2]
+		self.pose[2,0] = self.final_orientation
 		pose_dot[2,0] = self.roll_dot
 		self.imu_dot = 0		
 		#======================= standard odometry ros =============================
@@ -143,8 +139,14 @@ class Server:
 		#odom.twist.covariance[7] = 0.00001
 		#odom.twist.covariance[35] = 0.00001
 		#=======================================================================
-		print (self.pose)
+		#self.pose[2,0] = np.degrees(self.pose[2,0])
+		print (self.pose, np.degrees(self.pose[2,0]))
 		self.odometry_publisher.publish(odom)
+	
+	def reset_odom(self, dat):
+		self.pose[0,0] = dat.x
+		self.pose[1,0] = dat.y
+		self.pose[2,0] = np.radians(dat.z)
 	
 	def reference_update(self, dat):
 		self.imu_ref = self.orientation[0]
@@ -156,10 +158,10 @@ if __name__ == "__main__":
 	odom = Odometry()
 	odom_broadcaster = tf.TransformBroadcaster()
 	try:
-		#rospy.Subscriber("/robot_riset/Imu", Imu, server.imu_callback)
-		rospy.Subscriber("/robot_riset/Imu/DataRaw/Quatternion", Quaternion, server.imu_callback)
+		rospy.Subscriber("/robot_riset/Imu", Imu, server.imu_callback)
 		rospy.Subscriber("/set_imu_ref", Int32, server.reference_update)
 		rospy.Subscriber("/robot_riset/Motor/Feedback", EncoderMotor, server.rpm_callback)
+		rospy.Subscriber("/robot_riset/reset_odom", Vector3, server.reset_odom)
 		rospy.spin()
 	except rospy.ROSInterruptException:
 		pass
