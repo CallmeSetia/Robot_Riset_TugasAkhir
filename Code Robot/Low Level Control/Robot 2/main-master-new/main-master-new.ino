@@ -89,14 +89,10 @@ PID_Kontrol motor3_PID(3, 0, 0, 200, -248, 248, 0, 1023);
 PID_Kontrol motor4_PID(1, 0, 0, 200, -248, 248, 0, 1023);
 
 void IRAM_ATTR TIMER_PID_M3(void) {
-  pwmOut3 =  motor3_PID.kalkulasi(abs(rpm3));
-  //  if (pwmOut3 < 0) pwmOut3 = 0;
-  //  if (pwmOut3 > 1023) pwmOut3 = 1023;
+  pwmOut3 =  motor3_PID.kalkulasi(rpm3);
 }
 void IRAM_ATTR TIMER_PID_M4(void) {
-  pwmOut4 =  motor4_PID.kalkulasi(abs(rpm4));
-  //  if (pwmOut4 < 0) pwmOut4 = 0;
-  //  if (pwmOut4 > 1023) pwmOut4 = 1023;
+  pwmOut4 =  motor4_PID.kalkulasi(rpm4);
 }
 void IRAM_ATTR TimerHandler3(void) {
   encCnt3 = encoder3.getCount();
